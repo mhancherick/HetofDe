@@ -12,12 +12,11 @@ class DutchParser:
     def print_nouns(self):
         """
         A simple function to test out the JSON parsing
+        TODO: determine dimunitive logic
         """
 
         processed_words = 0
         processed_nouns = 0
-        nouns_with_gender = 0
-        skipped_examples = []
         
 
         with open(self._filename, 'r', encoding='utf-8') as file:
@@ -47,18 +46,20 @@ class DutchParser:
                 if not self.is_valid_noun(word, lang_code, word_type):
                     continue
 
-                if not tags:
+                if not tags and self.is_diminutive(word):
+                    article = 'het'
+                    article_source = 'inferred'
+                elif tags:                    
+                    article = self.determine_article(tags)
+                    article_source = 'tags'
+                else:
                     continue
-                    
-                article = self.determine_article(tags)
+
+                if not article:
+                    continue
+
 
                 processed_nouns += 1
-
-                if article:
-                    nouns_with_gender += 1
-                else:
-                    if tags and len(skipped_examples) < 100:
-                        skipped_examples.append((word, tags))
 
 
         print(f"Noun count: {processed_nouns}")
@@ -98,9 +99,16 @@ class DutchParser:
             return 'het'
         else:
             return None
-
-
         
+    def is_diminutive(self, word):
+        """
+        TODO: implement
+        """
+        if word.endswith('je'):
+            return True
+
+        return False
+
 if __name__ == "__main__":
     parser = DutchParser('nl-extract.jsonl')
     parser2 = DutchParser('kaikki.org-dictionary-Dutch-by-pos-noun.jsonl')
