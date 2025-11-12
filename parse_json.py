@@ -12,6 +12,10 @@ class DutchParser:
     def db_exists(self, db_path='dutch_nouns.db'):
         """
         Determines if the database has been created
+
+        :param db_path: the filepath of the database
+
+        :return: None
         """
         if os.path.exists(db_path):
             return True
@@ -20,16 +24,20 @@ class DutchParser:
     
     def create_database(self, db_path='dutch_nouns.db'):
         """
-        A simple function to test out the JSON parsing
+        Parses the JSON file, processes the data, and adds the data to a database
+
+        :param db_path: the filepath for the database
+
+        :return: None
         """
-
-
         processed_words = 0
         processed_nouns = 0
 
+        # Create DB connection
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         
+        # Create table
         cursor.execute('DROP TABLE IF EXISTS dictionary')
         cursor.execute('''
         CREATE TABLE dictionary (
@@ -42,6 +50,7 @@ class DutchParser:
         with open(self._filename, 'r', encoding='utf-8') as file:
             for line_number, line in enumerate(file):
 
+                # Provides processing progress in the console
                 if processed_words % 10000 == 0 and processed_words != 0:
                     print(f"Processed {processed_words} words")
 
@@ -51,12 +60,10 @@ class DutchParser:
                     print(f"Could not parse line {line_number}")
                     continue
  
-
                 word = entry.get('word', '').strip().lower()
                 tags = entry.get('tags', [])
                 lang_code = entry.get('lang_code', '').strip().lower()
                 word_type = entry.get('pos', '').strip().lower()
-
 
                 if not word:
                     continue
@@ -88,7 +95,6 @@ class DutchParser:
                 
                 processed_nouns += 1
 
-
         print(f"Processed {processed_words} words")
         print(f"Noun count: {processed_nouns}")
         print("FINISHED PROCESSING WORD LIST")
@@ -98,7 +104,13 @@ class DutchParser:
                     
     def is_valid_noun(self, word, lang_code, word_type):
         """
-        TODO: Implement
+        Determines if the word is a valid Dutch noun
+
+        :param word: the word to evaluate
+        :param lang_code: the language code of the word
+        :param word_type: the type of word (noun, adverb, etc.)
+
+        :return: True if the word is a valid Dutch Noun, False otherwise
         """
         if lang_code != 'nl':
             return False
@@ -114,7 +126,11 @@ class DutchParser:
     
     def determine_article(self, tags):
         """
-        TODO: implement
+        Determines what Dutch article should be used with the word
+
+        :param tags: an array of tags for the word
+
+        :return: The proper article for the word. Returns None if no article can be determined
         """
 
         # Dimunitives supersede all considerations
@@ -132,7 +148,11 @@ class DutchParser:
 
     def is_diminutive(self, word):
         """
-        TODO: implement
+        Determines if the word is a diminutive, which is always a "het" word
+
+        :param word: the word to evaluate
+
+        :return: True if the word is diminutive, False otherwisee
         """
         if word.endswith('je'):
             return True
@@ -141,7 +161,11 @@ class DutchParser:
     
     def test_db(self, db_path='dutch_nouns.db'):
         """
-        TODO: implement
+        Prints basic statistics and a sample of words from the database
+
+        :param db_path: the filepath of the database
+
+        :return: None
         """
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
