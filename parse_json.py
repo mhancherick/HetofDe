@@ -47,8 +47,8 @@ class DutchParser:
                 if not self.is_valid_noun(word, lang_code, word_type):
                     continue
 
-                #if not tags:
-                #    continue
+                if not tags:
+                    continue
                     
                 article = self.determine_article(tags)
 
@@ -61,12 +61,6 @@ class DutchParser:
                         skipped_examples.append((word, tags))
 
 
-            print(f"\nFinal counts:")
-            print(f"Total Dutch nouns: {processed_nouns}")
-            print(f"Nouns with gender: {nouns_with_gender}")
-            print(f"\nExamples of nouns WITH tags that were skipped:")
-            for word, tags in skipped_examples:
-                print(f"  {word}: {tags}")
         print(f"Noun count: {processed_nouns}")
                     
 
