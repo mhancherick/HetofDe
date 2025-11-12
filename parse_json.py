@@ -1,6 +1,6 @@
 # Dutch dictionary obtained from kaikki.org
 
-import json
+import json, sqlite3, os
 
 class DutchParser:
     def __init__(self, filename):
@@ -9,27 +9,47 @@ class DutchParser:
     def get_filename(self):
         return self._filename
     
-    def print_nouns(self):
+    def db_exists(self, db_path='dutch_nouns.db'):
+        """
+        Determines if the database has been created
+        """
+        if os.path.exists(db_path):
+            return True
+        else:
+            return False
+    
+    def create_database(self, db_path='dutch_nouns.db'):
         """
         A simple function to test out the JSON parsing
-        TODO: determine dimunitive logic
         """
+
 
         processed_words = 0
         processed_nouns = 0
+
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
         
+        cursor.execute('DROP TABLE IF EXISTS dictionary')
+        cursor.execute('''
+        CREATE TABLE dictionary (
+            word TEXT PRIMARY KEY,
+            article TEXT NOT NULL,
+            article_source TEXT NOT NULL
+            )
+        ''')
 
         with open(self._filename, 'r', encoding='utf-8') as file:
             for line_number, line in enumerate(file):
 
                 if processed_words % 10000 == 0 and processed_words != 0:
                     print(f"Processed {processed_words} words")
-                    print(f"Noun count: {processed_nouns}")
 
                 try:
                     entry = json.loads(line)
                 except json.JSONDecodeError:
                     print(f"Could not parse line {line_number}")
+                    continue
  
 
                 word = entry.get('word', '').strip().lower()
@@ -58,16 +78,24 @@ class DutchParser:
                 if not article:
                     continue
 
-
+                try:
+                    cursor.execute('INSERT OR REPLACE INTO dictionary (word, article, article_source) VALUES (?, ?, ?)',
+                        (word, article, article_source))
+                except sqlite3.Error as error:
+                    print(f"Error inserting word '{word}'")
+                    print(error)
+                    continue
+                
                 processed_nouns += 1
 
 
+        print(f"Processed {processed_words} words")
         print(f"Noun count: {processed_nouns}")
+        print("FINISHED PROCESSING WORD LIST")
+
+        connection.commit()
+        connection.close()
                     
-
-             
-
-
     def is_valid_noun(self, word, lang_code, word_type):
         """
         TODO: Implement
@@ -93,13 +121,15 @@ class DutchParser:
         if 'diminutive' in tags:
             return 'het'
 
-        if 'masculine' in tags or 'feminine' in tags or 'common-gender' in tags:
-            return 'de'
-        elif 'neuter' in tags:
-            return 'het'
-        else:
-            return None
-        
+        # Determines article based on primary tag
+        for tag in tags:
+            if tag in ['masculine', 'feminine', 'common-gender']:
+                return 'de'
+            elif tag == 'neuter':
+                return 'het'
+            
+        return None
+
     def is_diminutive(self, word):
         """
         TODO: implement
@@ -108,8 +138,40 @@ class DutchParser:
             return True
 
         return False
+    
+    def test_db(self, db_path='dutch_nouns.db'):
+        """
+        TODO: implement
+        """
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT COUNT(*) FROM dictionary")
+        total = cursor.fetchone()[0]
+        
+
+        cursor.execute("SELECT COUNT(*) FROM dictionary WHERE article = 'de'")
+        de_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM dictionary WHERE article = 'het'")
+        het_count = cursor.fetchone()[0]
+
+        cursor.execute("SELECT * FROM dictionary LIMIT 10")
+        word_rows = cursor.fetchall()
+                
+        print(f"Total words in DB: {total}")
+        print(f"Total 'de' words: {de_count}")
+        print(f"Total 'het' words: {het_count}")
+        print("Sample of words:")
+        for row in word_rows:
+            print(row)
 
 if __name__ == "__main__":
-    parser = DutchParser('nl-extract.jsonl')
-    parser2 = DutchParser('kaikki.org-dictionary-Dutch-by-pos-noun.jsonl')
-    parser.print_nouns()
+    db_path = 'dutch_nouns.db'
+    json_path = 'nl-extract.jsonl'
+    parser = DutchParser(json_path)
+
+    if not parser.db_exists(db_path):
+        parser.create_database(db_path)
+    
+    parser.test_db(db_path)
