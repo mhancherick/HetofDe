@@ -1,0 +1,31 @@
+nav {
+  background-color: #FF6C00;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+nav .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+nav h2 {
+  color: white;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+nav div a {
+  color: white;
+  text-decoration: none;
+  margin-left: 2rem;
+  font-size: 1.1rem;
+}
+
+nav div a:hover {
+  opacity: 0.8;
+}
