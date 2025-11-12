@@ -40,7 +40,7 @@ function Home() {
 
     return (
     <main className="container">
-        <h1>De of Het?</h1>
+        <h1>Het of De?</h1>
         <p>Enter a Dutch noun to find its article</p>
         
         <input type="text" 
