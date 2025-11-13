@@ -19,8 +19,8 @@ function Home() {
         setResultClass('')
 
         try {
-            const response = await fetch(`http://localhost:5000/api/lookup/${word.trim()}`);
-            const data = await response.json();
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/lookup/${word.trim()}`)
+            const data = await response.json()
             
             if (data.found) {
                 setResult(data.article)
@@ -32,7 +32,7 @@ function Home() {
             }
         } 
         catch (error) {
-            setResult('Error connecting to server');
+            setResult('Error connecting to server')
             setResultClass('');
             console.error(error);
         }
