@@ -20,6 +20,12 @@ p {
     font-size: 1.1rem;
 }
 
+h3 {
+    color: #333;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
 #wordInput {
     font-size: 1.2rem;
     text-align: center;
@@ -90,12 +96,6 @@ p {
 #result .translation {
     font-size: 1.2rem;
     margin: 15px 0;
-}
-
-h3 {
-    color: #333;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
 }
 
 .container a {

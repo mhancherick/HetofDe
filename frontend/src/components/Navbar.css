@@ -19,13 +19,23 @@ nav h2 {
   font-size: 1.5rem;
 }
 
-nav div a {
+/* More specific selectors for navbar links */
+nav a {
   color: white;
   text-decoration: none;
+  border-bottom: none;
+}
+
+nav div a {
   margin-left: 2rem;
   font-size: 1.1rem;
 }
 
-nav div a:hover {
+nav a:hover {
   opacity: 0.8;
+  border-bottom: none;
+}
+
+nav a:visited {
+  color: white;
 }
