@@ -91,3 +91,17 @@ p {
     font-size: 1.2rem;
     margin: 15px 0;
 }
+
+a {
+    color: #0066cc; /* Darker, more readable blue */
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #004499; /* Even darker on hover */
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #551a8b; /* Purple for visited links */
+}
