@@ -43,7 +43,8 @@ class DutchParser:
         CREATE TABLE dictionary (
             word TEXT PRIMARY KEY,
             article TEXT NOT NULL,
-            article_source TEXT NOT NULL
+            article_source TEXT NOT NULL,
+            english TEXT
             )
         ''')
 
@@ -64,6 +65,7 @@ class DutchParser:
                 tags = entry.get('tags', [])
                 lang_code = entry.get('lang_code', '').strip().lower()
                 word_type = entry.get('pos', '').strip().lower()
+                english = self.get_english(entry)
 
                 if not word:
                     continue
@@ -86,8 +88,8 @@ class DutchParser:
                     continue
 
                 try:
-                    cursor.execute('INSERT OR IGNORE INTO dictionary (word, article, article_source) VALUES (?, ?, ?)',
-                        (word, article, article_source))
+                    cursor.execute('INSERT OR IGNORE INTO dictionary (word, article, article_source, english) VALUES (?, ?, ?, ?)',
+                        (word, article, article_source, english))
                 except sqlite3.Error as error:
                     print(f"Error inserting word '{word}'")
                     print(error)
@@ -158,6 +160,30 @@ class DutchParser:
             return True
 
         return False
+    
+    def get_english(self, entry):
+        """
+        Gets the English translation(s) from the entry
+
+        :param entry: a JSON entry for a Dutch word
+
+        :return: English translation(s) or None if there aren't any
+        """
+
+        translations = entry.get('translations', [])
+        english_translations = []
+        seen = set()
+
+        for translation in translations:
+            if translation.get('lang_code') == 'en':
+                english_word = translation.get('word')
+                if english_word and english_word not in seen:
+                    english_translations.append(english_word)
+
+        if not english_translations:
+            return None
+        
+        return ', '.join(english_translations)
     
     def test_db(self, db_path='dutch_nouns.db'):
         """

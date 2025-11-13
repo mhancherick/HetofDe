@@ -5,7 +5,6 @@ import sqlite3
 app = Flask(__name__)
 CORS(app)
 
-#http://localhost:5000
 @app.route("/")
 def dictionary():
     return "<p>Dutch Dictionary API</p>"
@@ -25,10 +24,34 @@ def lookup_word(word):
     result = cursor.fetchone()
     connection.close()
     if result:
+        article = result[1]
+        # If there are english translations available, include
+        if len(result) > 3:
+            english = result[3]
+        else:
+            english = None
+
+        if article == 'de':
+            patterns = {
+                'definite': f'de {word}',
+                'demonstrative': f'deze/die {word}',
+                'adjective': f'een grote {word}',
+                'relative': f'de {word} die...'
+            }
+        else:
+            patterns = {
+                'definite': f'het {word}',
+                'demonstrative': f'dit/dat {word}',
+                'adjective': f'een groot {word}',
+                'relative': f'het {word} dat...'
+            }
+
         return {
             'word': result[0],
-            'article': result[1],
+            'article': article,
             'source': result[2],
+            'english': english,
+            'patterns': patterns,
             'found': True
         }
     else:

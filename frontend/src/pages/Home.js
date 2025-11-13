@@ -39,25 +39,40 @@ function Home() {
     }
 
     return (
-    <main className="container">
-        <h1>Het of De?</h1>
-        <p>Enter a Dutch noun to find its article</p>
-        
-        <input type="text" 
-        id="wordInput" 
-        placeholder="Enter noun here!"
-        value={word}
-        onChange={(e) => setWord(e.target.value)}
-        onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-                searchWord();
-            }
-        }}
-        />
-        <button id="searchBtn" onClick={searchWord}>Search</button>
-        
-        <div id="result" className={resultClass}>{result}</div>
-    </main>
+        <main className="container">
+            <h1>Het of De?</h1>
+            <p>Enter a Dutch noun to find its article</p>
+            
+            <input type="text" 
+                id="wordInput" 
+                placeholder="Enter noun here!"
+                value={word}
+                onChange={(e) => setWord(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        searchWord()
+                    }
+                }}
+            />
+            <button id="searchBtn" onClick={searchWord}>Search</button>
+            
+            <div id="result" className={resultClass}>
+                {result?.searching && 'Searching...'}
+                {result?.error && result.error}
+                {result?.found && (
+                    <div>
+                        <h2>{result.article}</h2>
+                        {result.english && <p className="translation">English: {result.english}</p>}
+                        <div className="patterns">
+                            <p><strong>Definite article:</strong> {result.patterns.definite}</p>
+                            <p><strong>Demonstrative:</strong> {result.patterns.demonstrative}</p>
+                            <p><strong>Indefinite + adjective:</strong> {result.patterns.adjective}</p>
+                            <p><strong>Relative pronoun:</strong> {result.patterns.relative}</p>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </main>
     )
 }
 
