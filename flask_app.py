@@ -33,17 +33,17 @@ def lookup_word(word):
 
         if article == 'de':
             patterns = {
-                'definite': f'de {word}',
-                'demonstrative': f'deze/die {word}',
-                'adjective': f'een grote {word}',
-                'relative': f'de {word} die...'
+                'definite': f'De {word}',
+                'demonstrative': f'Deze/die {word}',
+                'adjective': f'Een grote {word}',
+                'relative': f'De {word} die...'
             }
         else:
             patterns = {
-                'definite': f'het {word}',
-                'demonstrative': f'dit/dat {word}',
-                'adjective': f'een groot {word}',
-                'relative': f'het {word} dat...'
+                'definite': f'Het {word}',
+                'demonstrative': f'Dit/dat {word}',
+                'adjective': f'Een groot {word}',
+                'relative': f'Het {word} dat...'
             }
 
         return {

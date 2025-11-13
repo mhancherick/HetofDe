@@ -61,6 +61,7 @@ p {
     font-weight: bold;
     margin: 20px 0;
     color: #666666;
+     text-transform: capitalize;
 }
 
 #result.de h2,
