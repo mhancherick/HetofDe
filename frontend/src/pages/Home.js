@@ -4,18 +4,18 @@ import { useState } from 'react';
 function Home() {
 
     const [word, setWord] = useState('')
-    const [result, setResult] = useState('')
+    const [result, setResult] = useState(null)
     const [resultClass, setResultClass] = useState('')
 
     async function searchWord() {
 
         if (!word.trim() || word.trim().length < 2) {
-            setResult('Please enter a word')
+            setResult({ error: 'Please enter a word'})
             setResultClass('')
             return
         }
 
-        setResult('Searching')
+        setResult({ searching: true })
         setResultClass('')
 
         try {
@@ -23,16 +23,16 @@ function Home() {
             const data = await response.json()
             
             if (data.found) {
-                setResult(data.article)
+                setResult(data)
                 setResultClass(data.article)
             }
             else {
-                setResult('Word not found')
+                setResult({ error: 'Word not found' })
                 setResultClass('not-found')
             }
         } 
         catch (error) {
-            setResult('Error connecting to server')
+            setResult({ error: 'Error connecting to server' })
             setResultClass('');
             console.error(error);
         }
