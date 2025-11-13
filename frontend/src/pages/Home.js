@@ -65,7 +65,7 @@ function Home() {
                         {result.english && <p className="translation"><strong>English:</strong> {result.english}</p>}
                         <div className="patterns">
                             <p><strong>Definite article:</strong> {result.patterns.definite}</p>
-                            <p><strong>Demonstrative:</strong> {result.patterns.demonstrative}</p>
+                            <p><strong>Demonstrative pronoun:</strong> {result.patterns.demonstrative}</p>
                             <p><strong>Indefinite + adjective:</strong> {result.patterns.adjective}</p>
                             <p><strong>Relative pronoun:</strong> {result.patterns.relative}</p>
                         </div>

@@ -11,7 +11,11 @@ function About() {
             <p>I created Het of De to provide people learning Dutch a quick way to look up the article of a noun.
                 I hope you find this site useful!
             </p>
-            <p>If you have suggestions, please email me at hancherm@oregonstate.edu</p>
+
+            <p>Dutch data was sourced from <a href="https://kaikki.org">kaikki.org</a>. Many thanks to Tatu Ylonen for this resource!
+            </p>
+
+            <p>If you have suggestions, please email me at <a href="mailto:hancherm@oregonstate.edu">hancherm@oregonstate.edu</a></p>
         </main>
     )
 }
