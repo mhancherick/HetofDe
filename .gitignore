@@ -423,3 +423,7 @@ nl-extract.jsonl
 __pycache__/
 *.pyc
 *.pyo
+
+# Python test scripts
+check_conflicts.py
+check_first_entry.py

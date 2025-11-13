@@ -86,7 +86,7 @@ class DutchParser:
                     continue
 
                 try:
-                    cursor.execute('INSERT OR REPLACE INTO dictionary (word, article, article_source) VALUES (?, ?, ?)',
+                    cursor.execute('INSERT OR IGNORE INTO dictionary (word, article, article_source) VALUES (?, ?, ?)',
                         (word, article, article_source))
                 except sqlite3.Error as error:
                     print(f"Error inserting word '{word}'")
