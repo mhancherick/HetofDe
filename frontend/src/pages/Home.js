@@ -62,7 +62,7 @@ function Home() {
                 {result?.found && (
                     <div>
                         <h2>{result.article}</h2>
-                        {result.english && <p className="translation">English: {result.english}</p>}
+                        {result.english && <p className="translation"><strong>English:</strong> {result.english}</p>}
                         <div className="patterns">
                             <p><strong>Definite article:</strong> {result.patterns.definite}</p>
                             <p><strong>Demonstrative:</strong> {result.patterns.demonstrative}</p>

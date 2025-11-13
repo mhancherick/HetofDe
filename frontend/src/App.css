@@ -57,11 +57,11 @@ p {
 }
 
 #result h2 {
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: bold;
     margin: 20px 0;
     color: #666666;
-     text-transform: capitalize;
+    text-transform: capitalize;
 }
 
 #result.de h2,
@@ -76,7 +76,7 @@ p {
 }
 
 #result .patterns {
-    text-align: left;
+    text-align: center;
     max-width: 600px;
     margin: 20px auto;
     font-size: 1.1rem;
