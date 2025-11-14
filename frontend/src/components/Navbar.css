@@ -19,6 +19,7 @@ nav h2 {
   font-size: 1.5rem;
 }
 
+/* Override main CSS for navbar links */
 nav .container a,
 nav .container a:link,
 nav .container a:visited,

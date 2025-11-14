@@ -31,6 +31,7 @@ def lookup_word(word):
         else:
             english = None
 
+        # Allocate grammar rules based on noun type
         if article == 'de':
             patterns = {
                 'definite': f'de {word}',
@@ -43,7 +44,7 @@ def lookup_word(word):
                 'definite': f'het {word}',
                 'demonstrative': f'dit/dat {word}',
                 'adjective': f'een groot {word}',
-                'relative': f'det {word} dat...'
+                'relative': f'het {word} dat...'
             }
 
         return {

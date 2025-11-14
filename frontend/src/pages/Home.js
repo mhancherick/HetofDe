@@ -8,7 +8,7 @@ function Home() {
     const [resultClass, setResultClass] = useState('')
 
     async function searchWord() {
-
+        // Require nouns to be 2 or more characters
         if (!word.trim() || word.trim().length < 2) {
             setResult({ error: 'Please enter a word'})
             setResultClass('')
@@ -24,6 +24,7 @@ function Home() {
             
             if (data.found) {
                 setResult(data)
+                // Sets class for CSS styling of article
                 setResultClass(data.article)
             }
             else {
