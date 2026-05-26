@@ -202,8 +202,12 @@ class DutchParser:
         :return: the plural form string, or None if not available
         """
         for form in entry.get('forms', []):
-            if 'plural' in form.get('tags', []):
-                return form.get('form', '').strip() or None
+            tags = form.get('tags', [])
+            if 'plural' not in tags or 'diminutive' in tags:
+                continue
+            value = form.get('form', '').strip().rstrip(',').strip()
+            if value and not value.startswith('('):
+                return value
         return None
 
     def get_english(self, entry):
