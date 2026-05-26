@@ -12,6 +12,17 @@ function Grammar() {
                 to learn the definite article of a noun while learning that noun, as there is no easy, foolproof
                 way to determine the gender of a noun via rules.
             </p>
+            <h3>Plural Nouns</h3>
+            <p>All Dutch plural nouns use <strong>de</strong> as their definite article, regardless of the singular
+                article. This means that "het" words switch to "de" in the plural. For example,
+                "het huis" (the house) becomes "de huizen" (the houses), and "het kind" (the child)
+                becomes "de kinderen" (the children). "De" words stay "de": "de appel" (the apple)
+                becomes "de appels" (the apples).
+            </p>
+            <p>This rule has a useful consequence: once you know a word's plural, you automatically know
+                to use "de" with it. The plural forms shown on this site reflect this — the plural
+                patterns always use "de", even for "het" words.
+            </p>
             <h3>Demonstrative Pronouns</h3>
             <p>Similar to English, Dutch demonstrative pronouns follow a near/far distinction. In English, this
                 looks like this/these (for near things) and that/those (for far things). Dutch differs in that the 

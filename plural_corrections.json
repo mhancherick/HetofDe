@@ -1,0 +1,5 @@
+{
+    "_comment": "Manual plural corrections for words where Wiktextract source data is missing or incorrectly tagged. Only fills in words with no existing plural — never overwrites.",
+    "appel": "appels",
+    "boom": "bomen"
+}

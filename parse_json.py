@@ -91,8 +91,14 @@ class DutchParser:
                     continue
 
                 try:
-                    cursor.execute('INSERT OR IGNORE INTO dictionary (word, article, article_source, english, plural) VALUES (?, ?, ?, ?, ?)',
-                        (word, article, article_source, english, plural))
+                    cursor.execute('''
+                        INSERT INTO dictionary (word, article, article_source, english, plural)
+                        VALUES (?, ?, ?, ?, ?)
+                        ON CONFLICT(word, article) DO UPDATE SET
+                            plural = CASE WHEN dictionary.plural IS NULL AND excluded.plural IS NOT NULL
+                                          THEN excluded.plural
+                                          ELSE dictionary.plural END
+                    ''', (word, article, article_source, english, plural))
                 except sqlite3.Error as error:
                     print(f"Error inserting word '{word}'")
                     print(error)
@@ -338,6 +344,35 @@ def apply_exclusions(db_path='dutch_nouns.db', exclusions_path='exclusions.json'
     print(f"  Exclusions applied — {removed} entries removed from {exclusions_path}")
 
 
+def apply_plural_corrections(db_path='dutch_nouns.db', corrections_path='plural_corrections.json'):
+    """
+    Updates plural forms for words where source data is missing or incorrectly tagged.
+    Only fills in words that currently have no plural — never overwrites existing data.
+    """
+    if not os.path.exists(corrections_path):
+        return
+
+    with open(corrections_path, 'r', encoding='utf-8') as f:
+        corrections = json.load(f)
+
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    updated = 0
+
+    for word, plural in corrections.items():
+        if word.startswith('_'):
+            continue
+        cursor.execute(
+            'UPDATE dictionary SET plural = ? WHERE word = ? AND plural IS NULL',
+            (plural, word.lower().strip())
+        )
+        updated += cursor.rowcount
+
+    connection.commit()
+    connection.close()
+    print(f"  Plural corrections applied — {updated} entries updated from {corrections_path}")
+
+
 def apply_diminutive_translations(db_path='dutch_nouns.db'):
     """
     For inferred diminutive words (-je) with no English translation, tries to
@@ -387,5 +422,6 @@ if __name__ == "__main__":
 
     apply_corrections(db_path)
     apply_exclusions(db_path)
+    apply_plural_corrections(db_path)
     apply_diminutive_translations(db_path)
     DutchParser(source_files[0]).test_db(db_path)
