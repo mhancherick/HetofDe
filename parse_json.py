@@ -32,6 +32,7 @@ class DutchParser:
                 article TEXT NOT NULL,
                 article_source TEXT NOT NULL,
                 english TEXT,
+                plural TEXT,
                 UNIQUE(word, article)
                 )
             ''')
@@ -57,6 +58,9 @@ class DutchParser:
                 lang_code = entry.get('lang_code', '').strip().lower()
                 word_type = entry.get('pos', '').strip().lower()
                 english = self.get_english(entry)
+                plural = self.get_plural(entry)
+                if plural is None and word.endswith('je'):
+                    plural = word + 's'
 
                 if not word:
                     continue
@@ -87,8 +91,8 @@ class DutchParser:
                     continue
 
                 try:
-                    cursor.execute('INSERT OR IGNORE INTO dictionary (word, article, article_source, english) VALUES (?, ?, ?, ?)',
-                        (word, article, article_source, english))
+                    cursor.execute('INSERT OR IGNORE INTO dictionary (word, article, article_source, english, plural) VALUES (?, ?, ?, ?, ?)',
+                        (word, article, article_source, english, plural))
                 except sqlite3.Error as error:
                     print(f"Error inserting word '{word}'")
                     print(error)
@@ -183,6 +187,19 @@ class DutchParser:
 
         return False
 
+    def get_plural(self, entry):
+        """
+        Extracts the plural form from the entry's forms array.
+
+        :param entry: a JSON entry for a Dutch word
+
+        :return: the plural form string, or None if not available
+        """
+        for form in entry.get('forms', []):
+            if 'plural' in form.get('tags', []):
+                return form.get('form', '').strip() or None
+        return None
+
     def get_english(self, entry):
         """
         Gets the English translation(s) from the entry
@@ -231,12 +248,16 @@ class DutchParser:
         cursor.execute("SELECT article_source, COUNT(*) FROM dictionary GROUP BY article_source")
         sources = cursor.fetchall()
 
+        cursor.execute("SELECT COUNT(*) FROM dictionary WHERE plural IS NOT NULL")
+        plural_count = cursor.fetchone()[0]
+
         cursor.execute("SELECT * FROM dictionary LIMIT 10")
         word_rows = cursor.fetchall()
 
         print(f"\nTotal words in DB: {total}")
         print(f"Total 'de' words: {de_count}")
         print(f"Total 'het' words: {het_count}")
+        print(f"Words with plural: {plural_count} ({plural_count * 100 // total}%)")
         print(f"By source: {dict(sources)}")
         print("Sample of words:")
         for row in word_rows:

@@ -121,6 +121,12 @@ h3 {
     margin: 15px 0;
 }
 
+.plural-patterns {
+    border-top: 1px solid #ddd;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+}
+
 .container a {
     color: #0056b3;
     text-decoration: none;

@@ -70,6 +70,14 @@ function Home() {
                             <p><strong>Indefinite + adjective:</strong> {r.patterns.adjective}</p>
                             <p><strong>Relative pronoun:</strong> {r.patterns.relative}</p>
                         </div>
+                        {r.plural_patterns && (
+                            <div className="patterns plural-patterns">
+                                <p><strong>Plural definite:</strong> {r.plural_patterns.definite}</p>
+                                <p><strong>Plural demonstrative:</strong> {r.plural_patterns.demonstrative}</p>
+                                <p><strong>Plural + adjective:</strong> {r.plural_patterns.adjective}</p>
+                                <p><strong>Plural relative:</strong> {r.plural_patterns.relative}</p>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

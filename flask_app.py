@@ -28,6 +28,7 @@ def lookup_word(word):
         for row in rows:
             article = row[1]
             english = row[3] if len(row) > 3 else None
+            plural = row[4] if len(row) > 4 else None
 
             if article == 'de':
                 patterns = {
@@ -44,10 +45,19 @@ def lookup_word(word):
                     'relative': f'het {word} dat...'
                 }
 
+            plural_patterns = {
+                'definite': f'de {plural}',
+                'demonstrative': f'deze/die {plural}',
+                'adjective': f'grote {plural}',
+                'relative': f'de {plural} die...'
+            } if plural else None
+
             results.append({
                 'article': article,
                 'source': row[2],
                 'english': english,
+                'plural': plural,
+                'plural_patterns': plural_patterns,
                 'patterns': patterns,
             })
 
