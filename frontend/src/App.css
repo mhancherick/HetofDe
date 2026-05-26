@@ -87,17 +87,14 @@ h3 {
     flex: 1;
     min-width: 260px;
     max-width: 480px;
+    margin: 0 auto;
     border: 2px solid #ddd;
     border-radius: 8px;
     padding: 1rem 1.5rem;
 }
 
-.result-card h2 {
-    color: #666666;
-}
-
-.result-card.de h2,
-.result-card.het h2 {
+#result .result-card.de h2,
+#result .result-card.het h2 {
     color: #FF6C00;
 }
 
