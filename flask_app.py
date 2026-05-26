@@ -51,6 +51,12 @@ def lookup_word(word):
                 'patterns': patterns,
             })
 
+        # If some results have an English definition and some don't, suppress the ones without
+        if len(results) > 1:
+            with_english = [r for r in results if r['english']]
+            if with_english:
+                results = with_english
+
         return {
             'word': rows[0][0],
             'found': True,
