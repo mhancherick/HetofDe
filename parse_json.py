@@ -64,6 +64,7 @@ class DutchParser:
  
                 word = entry.get('word', '').strip().lower()
                 tags = entry.get('tags', [])
+                head_templates = entry.get('head_templates', [])
                 lang_code = entry.get('lang_code', '').strip().lower()
                 word_type = entry.get('pos', '').strip().lower()
                 english = self.get_english(entry)
@@ -79,11 +80,19 @@ class DutchParser:
                 if not tags and self.is_diminutive(word):
                     article = 'het'
                     article_source = 'inferred'
-                elif tags:                    
+                elif tags:
                     article = self.determine_article(tags)
                     article_source = 'tags'
+                    if not article:
+                        article = self.determine_article_from_templates(head_templates)
+                        if article:
+                            article_source = 'head_templates'
                 else:
-                    continue
+                    article = self.determine_article_from_templates(head_templates)
+                    if article:
+                        article_source = 'head_templates'
+                    else:
+                        continue
 
                 if not article:
                     continue
@@ -147,6 +156,31 @@ class DutchParser:
             elif tag == 'neuter':
                 return 'het'
             
+        return None
+
+    def determine_article_from_templates(self, head_templates):
+        """
+        Extracts the Dutch article from head_templates as a fallback when tags lack gender info.
+        Handles both explicit 'de'/'het' args and gender-letter shorthands (m/f/c → de, n → het).
+
+        :param head_templates: the head_templates list from a kaikki.org entry
+
+        :return: 'de', 'het', or None
+        """
+        de_letters = {'m', 'f', 'c'}
+
+        for template in head_templates:
+            if not str(template.get('name', '')).startswith('nl-noun'):
+                continue
+            args = template.get('args', {})
+            first_arg = str(args.get('1', '')).strip().lower()
+            if first_arg in ('de', 'het'):
+                return first_arg
+            if first_arg in de_letters:
+                return 'de'
+            if first_arg == 'n':
+                return 'het'
+
         return None
 
     def is_diminutive(self, word):
