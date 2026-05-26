@@ -12,7 +12,7 @@ function SuggestionForm({ onSuccess }) {
         if (state.succeeded) onSuccess();
     }, [state.succeeded]);
 
-    const needsWord = suggestionType === 'missing_word' || suggestionType === 'incorrect_article';
+    const needsWord = suggestionType === 'missing_word' || suggestionType === 'incorrect_article' || suggestionType === 'missing_definition';
 
     return (
         <form className="suggestion-form" onSubmit={handleSubmit}>
@@ -28,6 +28,7 @@ function SuggestionForm({ onSuccess }) {
                 >
                     <option value="general">General feedback</option>
                     <option value="missing_word">Missing word</option>
+                    <option value="missing_definition">Missing definition</option>
                     <option value="incorrect_article">Incorrect article</option>
                 </select>
             </div>
