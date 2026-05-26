@@ -256,7 +256,5 @@ if __name__ == "__main__":
     json_path = 'nl-extract.jsonl'
     parser = DutchParser(json_path)
 
-    if not parser.db_exists(db_path):
-        parser.create_database(db_path)
-    
+    parser.create_database(db_path)
     parser.test_db(db_path)
