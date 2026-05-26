@@ -417,6 +417,7 @@ FodyWeavers.xsd
 *.msp
 
 *.jsonl
+*.jsonl.gz
 nl-extract.jsonl
 
 

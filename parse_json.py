@@ -1,6 +1,6 @@
 # Dutch dictionary obtained from kaikki.org
 
-import json, sqlite3, os, sys
+import gzip, json, sqlite3, os, sys
 
 class DutchParser:
     def __init__(self, filename):
@@ -38,7 +38,8 @@ class DutchParser:
 
         print(f"Processing {self._filename}...")
 
-        with open(self._filename, 'r', encoding='utf-8') as file:
+        open_fn = gzip.open if self._filename.endswith('.gz') else open
+        with open_fn(self._filename, 'rt', encoding='utf-8') as file:
             for line_number, line in enumerate(file):
 
                 if processed_words % 10000 == 0 and processed_words != 0:
@@ -244,6 +245,42 @@ class DutchParser:
         connection.close()
 
 
+def apply_corrections(db_path='dutch_nouns.db', corrections_path='corrections.json'):
+    """
+    Inserts manually curated word→article mappings for words that all automated
+    sources failed to capture. Uses INSERT OR IGNORE so it never overwrites
+    authoritative source data.
+    """
+    if not os.path.exists(corrections_path):
+        return
+
+    with open(corrections_path, 'r', encoding='utf-8') as f:
+        corrections = json.load(f)
+
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    added = 0
+
+    for word, article in corrections.items():
+        if word.startswith('_'):
+            continue
+        if article not in ('de', 'het'):
+            continue
+        try:
+            cursor.execute(
+                'INSERT OR IGNORE INTO dictionary (word, article, article_source, english) VALUES (?, ?, ?, ?)',
+                (word.lower().strip(), article, 'manual', None)
+            )
+            if cursor.rowcount:
+                added += 1
+        except sqlite3.Error:
+            pass
+
+    connection.commit()
+    connection.close()
+    print(f"  Corrections applied — {added} new entries from {corrections_path}")
+
+
 if __name__ == "__main__":
     db_path = 'dutch_nouns.db'
     # Default to nl-extract.jsonl; pass additional files as extra args to supplement
@@ -253,4 +290,5 @@ if __name__ == "__main__":
         parser = DutchParser(json_path)
         parser.create_database(db_path, reset=(i == 0))
 
+    apply_corrections(db_path)
     DutchParser(source_files[0]).test_db(db_path)
