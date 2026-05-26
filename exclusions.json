@@ -1,0 +1,4 @@
+[
+  {"word": "man",  "article": "het", "reason": "Source confused 'man' with 'manna'; het manna is a different word"},
+  {"word": "week", "article": "het", "reason": "Source tagged the adjective 'week' (soft/weak) as a noun; zwak means weak"}
+]

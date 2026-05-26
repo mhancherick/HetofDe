@@ -250,6 +250,10 @@ def apply_corrections(db_path='dutch_nouns.db', corrections_path='corrections.js
     Inserts manually curated word→article mappings for words that all automated
     sources failed to capture. Uses INSERT OR IGNORE so it never overwrites
     authoritative source data.
+
+    Each entry can be either:
+      "word": "article"
+      "word": {"article": "de/het", "english": "..."}
     """
     if not os.path.exists(corrections_path):
         return
@@ -261,15 +265,20 @@ def apply_corrections(db_path='dutch_nouns.db', corrections_path='corrections.js
     cursor = connection.cursor()
     added = 0
 
-    for word, article in corrections.items():
+    for word, value in corrections.items():
         if word.startswith('_'):
             continue
+        if isinstance(value, str):
+            article, english = value, None
+        else:
+            article = value.get('article', '')
+            english = value.get('english', None)
         if article not in ('de', 'het'):
             continue
         try:
             cursor.execute(
                 'INSERT OR IGNORE INTO dictionary (word, article, article_source, english) VALUES (?, ?, ?, ?)',
-                (word.lower().strip(), article, 'manual', None)
+                (word.lower().strip(), article, 'manual', english)
             )
             if cursor.rowcount:
                 added += 1
@@ -279,6 +288,71 @@ def apply_corrections(db_path='dutch_nouns.db', corrections_path='corrections.js
     connection.commit()
     connection.close()
     print(f"  Corrections applied — {added} new entries from {corrections_path}")
+
+
+def apply_exclusions(db_path='dutch_nouns.db', exclusions_path='exclusions.json'):
+    """
+    Removes known-bad word+article pairs from the database.
+    """
+    if not os.path.exists(exclusions_path):
+        return
+
+    with open(exclusions_path, 'r', encoding='utf-8') as f:
+        exclusions = json.load(f)
+
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    removed = 0
+
+    for entry in exclusions:
+        word = entry.get('word', '').lower().strip()
+        article = entry.get('article', '')
+        if not word or article not in ('de', 'het'):
+            continue
+        cursor.execute('DELETE FROM dictionary WHERE word = ? AND article = ?', (word, article))
+        removed += cursor.rowcount
+
+    connection.commit()
+    connection.close()
+    print(f"  Exclusions applied — {removed} entries removed from {exclusions_path}")
+
+
+def apply_diminutive_translations(db_path='dutch_nouns.db'):
+    """
+    For inferred diminutive words (-je) with no English translation, tries to
+    inherit a translation from the base word with " (diminutive)" appended.
+
+    Tries suffix rules in order: -etje, -tje, -je
+    Only updates words that still have no English after all other steps.
+    """
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT word FROM dictionary WHERE article_source = 'inferred' AND english IS NULL")
+    diminutives = [row[0] for row in cursor.fetchall()]
+
+    updated = 0
+    for word in diminutives:
+        base = None
+        for suffix, replacement in [('etje', ''), ('tje', ''), ('je', '')]:
+            if word.endswith(suffix):
+                candidate = word[:-len(suffix)] + replacement
+                cursor.execute('SELECT english FROM dictionary WHERE word = ? AND english IS NOT NULL LIMIT 1', (candidate,))
+                row = cursor.fetchone()
+                if row:
+                    base = row[0]
+                    break
+
+        if base:
+            cursor.execute(
+                "UPDATE dictionary SET english = ? WHERE word = ? AND article_source = 'inferred' AND english IS NULL",
+                (f"{base} (diminutive)", word)
+            )
+            updated += cursor.rowcount
+
+    connection.commit()
+    connection.close()
+    print(f"  Diminutive inheritance — {updated} translations filled from base forms")
 
 
 if __name__ == "__main__":
@@ -291,4 +365,6 @@ if __name__ == "__main__":
         parser.create_database(db_path, reset=(i == 0))
 
     apply_corrections(db_path)
+    apply_exclusions(db_path)
+    apply_diminutive_translations(db_path)
     DutchParser(source_files[0]).test_db(db_path)
