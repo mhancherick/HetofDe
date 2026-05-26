@@ -75,6 +75,32 @@ h3 {
     color: #FF6C00;
 }
 
+#result.both {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.result-card {
+    flex: 1;
+    min-width: 260px;
+    max-width: 480px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+}
+
+.result-card h2 {
+    color: #666666;
+}
+
+.result-card.de h2,
+.result-card.het h2 {
+    color: #FF6C00;
+}
+
 #result.not-found {
     font-size: 2.5rem;
     font-weight: bold;

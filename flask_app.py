@@ -21,39 +21,40 @@ def lookup_word(word):
     word = word.lower()
 
     cursor.execute("SELECT * FROM dictionary WHERE word = ?", (word,))
-    result = cursor.fetchone()
+    rows = cursor.fetchall()
     connection.close()
-    if result:
-        article = result[1]
-        # If there are english translations available, include
-        if len(result) > 3:
-            english = result[3]
-        else:
-            english = None
+    if rows:
+        results = []
+        for row in rows:
+            article = row[1]
+            english = row[3] if len(row) > 3 else None
 
-        # Allocate grammar rules based on noun type
-        if article == 'de':
-            patterns = {
-                'definite': f'de {word}',
-                'demonstrative': f'deze/die {word}',
-                'adjective': f'een grote {word}',
-                'relative': f'de {word} die...'
-            }
-        else:
-            patterns = {
-                'definite': f'het {word}',
-                'demonstrative': f'dit/dat {word}',
-                'adjective': f'een groot {word}',
-                'relative': f'het {word} dat...'
-            }
+            if article == 'de':
+                patterns = {
+                    'definite': f'de {word}',
+                    'demonstrative': f'deze/die {word}',
+                    'adjective': f'een grote {word}',
+                    'relative': f'de {word} die...'
+                }
+            else:
+                patterns = {
+                    'definite': f'het {word}',
+                    'demonstrative': f'dit/dat {word}',
+                    'adjective': f'een groot {word}',
+                    'relative': f'het {word} dat...'
+                }
+
+            results.append({
+                'article': article,
+                'source': row[2],
+                'english': english,
+                'patterns': patterns,
+            })
 
         return {
-            'word': result[0],
-            'article': article,
-            'source': result[2],
-            'english': english,
-            'patterns': patterns,
-            'found': True
+            'word': rows[0][0],
+            'found': True,
+            'results': results,
         }
     else:
         return {

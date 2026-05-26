@@ -41,10 +41,11 @@ class DutchParser:
         cursor.execute('DROP TABLE IF EXISTS dictionary')
         cursor.execute('''
         CREATE TABLE dictionary (
-            word TEXT PRIMARY KEY,
+            word TEXT NOT NULL,
             article TEXT NOT NULL,
             article_source TEXT NOT NULL,
-            english TEXT
+            english TEXT,
+            UNIQUE(word, article)
             )
         ''')
 
